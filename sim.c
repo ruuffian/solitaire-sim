@@ -14,12 +14,7 @@
 
 typedef struct tag_Ranking
 {
-  int columns[4][2] = {
-	               {0,0}, 
-		       {0,0}, 
-		       {0,0}, 
-		       {0,0}
-                      };
+  int columns[4][2];
 } Ranking;
 
 typedef struct tag_Column 
@@ -60,14 +55,14 @@ int get_best(Board board, Ranking *rank)
   int best = 0;
   int tag = 0;
   for(int i = 0; i < COLUMNS; i++){
-    if(rank -> *(*(columns + i) + 0) > best)
-      best = rank -> *(*(columns + i) + 0);
+    if(*(*(rank -> columns + i) + 0) > best)
+      best = *(*(rank -> columns + i) + 0);
       tag = i;
   }
   if(tag = 0){
     best = 8;
     for(int i = 0; i < COLUMNS; i++){
-      if(board.columns[i].depth < best && rank -> *(*(columns + i) + 0) == 0){
+      if(board.columns[i].depth < best && *(*(rank -> columns + i) + 0) == 0){
         best = board.columns[i].depth;
 	tag = i;
       }
@@ -79,7 +74,7 @@ int get_best(Board board, Ranking *rank)
 void check_best(Board board, Ranking *rank, int val)
 {
   for(int i = 0; i < COLUMNS; i++){
-    check_col(rank -> *(columns + i), board.columns[i+1], val);
+    check_col(*(rank -> columns + i), board.columns[i+1], val);
   }
 }
 
