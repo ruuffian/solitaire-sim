@@ -1,16 +1,36 @@
+/*
+ * author: ruuffian
+ * description: simulate and solve the 2048 solitaire game
+ * date started: 10/4/2021
+ * date complete: 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#define EMPTY 0
+#define EMPTY 7
 #define COLUMNS 4
+#define POSITIONS 7
 
-typedef struct tag_Column {
+typedef struct tag_Ranking
+{
+  int columns[4][2] = {
+	               {0,0}, 
+		       {0,0}, 
+		       {0,0}, 
+		       {0,0}
+                      };
+} Ranking;
+
+typedef struct tag_Column 
+{
   int ray[8];
   int depth;
   int tag;
 } Column;
 
-typedef struct tag_Board {
+typedef struct tag_Board 
+{
   Column columns[COLUMNS];
 } Board;
 
@@ -18,20 +38,53 @@ void print_col(Column col);
 void print_board(Board board);
 void check_col(int *buf, Column col, int val);
 void check_stack(int *buf, Column col, int val);
+int get_best(Board board, Ranking *rank);
+void check_best(Board board, Ranking *rank, int val);
 
-int main(int arg, char **argv){
+int main(int arg, char **argv)
+{
   Board board;
+  Ranking *rank = malloc(sizeof(Ranking));
 
   for(int i = 0; i < COLUMNS; i++){
-    board.columns[i].tag = i+1;
+    board.columns[i].tag = i;
     board.columns[i].depth = EMPTY;
   }
-
   print_board(board);
+  free(rank);
   return 0;
 }
 
-void check_col(int *buf, Column col, int val){
+int get_best(Board board, Ranking *rank)
+{
+  int best = 0;
+  int tag = 0;
+  for(int i = 0; i < COLUMNS; i++){
+    if(rank -> *(*(columns + i) + 0) > best)
+      best = rank -> *(*(columns + i) + 0);
+      tag = i;
+  }
+  if(tag = 0){
+    best = 8;
+    for(int i = 0; i < COLUMNS; i++){
+      if(board.columns[i].depth < best && rank -> *(*(columns + i) + 0) == 0){
+        best = board.columns[i].depth;
+	tag = i;
+      }
+    }
+  }
+  return tag;
+}
+
+void check_best(Board board, Ranking *rank, int val)
+{
+  for(int i = 0; i < COLUMNS; i++){
+    check_col(rank -> *(columns + i), board.columns[i+1], val);
+  }
+}
+
+void check_col(int *buf, Column col, int val)
+{
   if(col.ray[col.depth] == val)
     check_stack(buf, col, val);
   if(col.ray[col.depth] > val){
@@ -42,7 +95,8 @@ void check_col(int *buf, Column col, int val){
   buf[1] = val;
 }
 
-void check_stack(int *buf, Column col, int val){
+void check_stack(int *buf, Column col, int val)
+{
   int i = col.depth;
   while(col.ray[i] == val && i > 0){
     val *= 2;
@@ -54,16 +108,18 @@ void check_stack(int *buf, Column col, int val){
   buf[1] = val;
 }
 
-void print_board(Board board){
+void print_board(Board board)
+{
   for(int i = 0; i < COLUMNS; i++){
     print_col(board.columns[i]);
   }
 }
 
-void print_col(Column col){
-  printf("%s%d%s", "Column ", col.tag, ":: [");
-  for(int i = 0; i < 7; i++){
+void print_col(Column col)
+{
+  printf("%s%d%s", "Column ", col.tag + 1, ":: [");
+  for(int i = 0; i < POSITIONS; i++){
     printf("%d%s", col.ray[i], ", ");
   }
-  printf("%d%s", col.ray[7], "]\n");
+  printf("%d%s", col.ray[POSITIONS], "]\n");
 }
