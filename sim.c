@@ -16,8 +16,8 @@ typedef struct tag_Board {
 
 void print_col(Column col);
 void print_board(Board board);
-void check_col(int *buf, Colomn col, int val);
-void check_stack(int *buf, Colomn col, int val);
+void check_col(int *buf, Column col, int val);
+void check_stack(int *buf, Column col, int val);
 
 int main(int arg, char **argv){
   Board board;
