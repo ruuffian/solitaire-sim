@@ -10,7 +10,7 @@
 
 #define EMPTY 7
 #define COLUMNS 4
-#define POSITIONS 7
+#define POSITIONS 8
 
 typedef struct tag_Ranking
 {
@@ -35,6 +35,7 @@ void check_col(int *buf, Column col, int val);
 void check_stack(int *buf, Column col, int val);
 int get_best(Board board, Ranking *rank);
 void check_best(Board board, Ranking *rank, int val);
+void add_val(int val, Column col);
 
 int main(int arg, char **argv)
 {
@@ -44,10 +45,26 @@ int main(int arg, char **argv)
   for(int i = 0; i < COLUMNS; i++){
     board.columns[i].tag = i;
     board.columns[i].depth = EMPTY;
+    for(int j = 0; j < POSITIONS; j++){
+      board.columns[i].ray[j] = 0;
+    }
   }
+  print_board(board);
+  add_val(2, board.columns[0]);
   print_board(board);
   free(rank);
   return 0;
+  }
+
+void add_val(int val, Column col){
+  int check[2];
+  check_stack(check, col, val);
+  col.ray[check[0]] = check[1];
+  int blanked = col.depth - check[0];
+  for(int i = POSITIONS - 1; i > blanked; i--){
+    col.ray[i] = 0;
+  }
+  col.depth = check[1];
 }
 
 int get_best(Board board, Ranking *rank)
@@ -113,8 +130,8 @@ void print_board(Board board)
 void print_col(Column col)
 {
   printf("%s%d%s", "Column ", col.tag + 1, ":: [");
-  for(int i = 0; i < POSITIONS; i++){
+  for(int i = 0; i < POSITIONS - 1; i++){
     printf("%d%s", col.ray[i], ", ");
   }
-  printf("%d%s", col.ray[POSITIONS], "]\n");
+  printf("%d%s", col.ray[POSITIONS - 1], "]\n");
 }
