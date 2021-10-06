@@ -12,7 +12,7 @@
 #define COLUMNS 4
 #define POSITIONS 8
 
-typedef struct tag_Ranking
+typedef struct tag_Ranking // marked for removal
 {
   int columns[4][2];
 } Ranking;
@@ -35,7 +35,7 @@ void check_col(int *buf, Column col, int val);
 void check_stack(int *buf, Column col, int val);
 int get_best(Board board, Ranking *rank);
 void check_best(Board board, Ranking *rank, int val);
-void add_val(int val, Column col);
+Column add_val(int val, Column col);
 
 int main(int arg, char **argv)
 {
@@ -49,22 +49,26 @@ int main(int arg, char **argv)
       board.columns[i].ray[j] = 0;
     }
   }
+
   print_board(board);
-  add_val(2, board.columns[0]);
+  Column new = add_val(2,board.columns[0]);
+  board.columns[0] = new;
   print_board(board);
+
   free(rank);
   return 0;
   }
 
-void add_val(int val, Column col){
-  int check[2];
-  check_stack(check, col, val);
-  col.ray[check[0]] = check[1];
-  int blanked = col.depth - check[0];
-  for(int i = POSITIONS - 1; i > blanked; i--){
+Column add_val(int val, Column col){
+  int (*check)[2];
+  check_stack(*check, col, val);
+  col.ray[*(check)[0]] = *(check)[1];
+  for(int i = *(check)[0]; i < POSITIONS; i++){
     col.ray[i] = 0;
   }
-  col.depth = check[1];
+  col.depth = *(check)[1];
+  free(check);
+  return col;
 }
 
 int get_best(Board board, Ranking *rank)
@@ -107,7 +111,7 @@ void check_col(int *buf, Column col, int val)
   buf[1] = val;
 }
 
-void check_stack(int *buf, Column col, int val)
+void check_stack(int *check, Column col, int val)
 {
   int i = col.depth;
   while(col.ray[i] == val && i > 0){
@@ -116,8 +120,8 @@ void check_stack(int *buf, Column col, int val)
   }
   if(col.ray[0] == val)
     val *= 2;
-  buf[0] = i;
-  buf[1] = val;
+  check[0] = i;
+  check[1] = val;
 }
 
 void print_board(Board board)
@@ -133,5 +137,5 @@ void print_col(Column col)
   for(int i = 0; i < POSITIONS - 1; i++){
     printf("%d%s", col.ray[i], ", ");
   }
-  printf("%d%s", col.ray[POSITIONS - 1], "]\n");
+  printf("%d%s", col.ray[POSITIONS - 1], "]\n\n");
 }
