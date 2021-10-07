@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define INIT -1
 #define EMPTY 7
 #define COLUMNS 4
 #define POSITIONS 8
@@ -44,15 +45,18 @@ int main(int arg, char **argv)
 
   for(int i = 0; i < COLUMNS; i++){
     board.columns[i].tag = i;
-    board.columns[i].depth = EMPTY;
+    board.columns[i].depth = INIT;
     for(int j = 0; j < POSITIONS; j++){
       board.columns[i].ray[j] = 0;
     }
   }
 
   print_board(board);
-  Column new = add_val(2,board.columns[0]);
+  Column new = add_val(2, board.columns[0]);
   board.columns[0] = new;
+  print_board(board);
+  Column new2 = add_val(2, board.columns[0]);
+  board.columns[0] = new2;
   print_board(board);
 
   free(rank);
@@ -60,14 +64,19 @@ int main(int arg, char **argv)
   }
 
 Column add_val(int val, Column col){
-  int (*check)[2];
-  check_stack(*check, col, val);
-  col.ray[*(check)[0]] = *(check)[1];
-  for(int i = *(check)[0]; i < POSITIONS; i++){
-    col.ray[i] = 0;
+  int arr[2];
+  int *check;
+  check = arr;
+  if(col.ray[col.depth] == val){
+    check_stack(check, col, val);
+    col.ray[*check] = *(check + 1);
+    for(int i = *check; i < POSITIONS; i++){
+      col.ray[i] = 0;
+    }
+    col.depth = *(check + 1);
   }
-  col.depth = *(check)[1];
-  free(check);
+  col.ray[col.depth + 1] = val;
+  col.depth = col.depth + 1;
   return col;
 }
 
@@ -120,8 +129,8 @@ void check_stack(int *check, Column col, int val)
   }
   if(col.ray[0] == val)
     val *= 2;
-  check[0] = i;
-  check[1] = val;
+  *check = i;
+  *(check + 1) = val;
 }
 
 void print_board(Board board)
@@ -129,6 +138,7 @@ void print_board(Board board)
   for(int i = 0; i < COLUMNS; i++){
     print_col(board.columns[i]);
   }
+  printf("\n\n");
 }
 
 void print_col(Column col)
@@ -137,5 +147,5 @@ void print_col(Column col)
   for(int i = 0; i < POSITIONS - 1; i++){
     printf("%d%s", col.ray[i], ", ");
   }
-  printf("%d%s", col.ray[POSITIONS - 1], "]\n\n");
+  printf("%d%s", col.ray[POSITIONS - 1], "]\n");
 }
