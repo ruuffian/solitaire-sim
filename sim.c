@@ -15,137 +15,134 @@
 
 typedef struct tag_Ranking // marked for removal
 {
-  int columns[4][2];
+    int columns[4][2];
 } Ranking;
 
-typedef struct tag_Column 
-{
-  int ray[8];
-  int depth;
-  int tag;
+typedef struct tag_Column {
+    int ray[8];
+    int depth;
+    int tag;
 } Column;
 
-typedef struct tag_Board 
-{
-  Column columns[COLUMNS];
+typedef struct tag_Board {
+    Column columns[COLUMNS];
 } Board;
 
 void print_col(Column col);
+
 void print_board(Board board);
+
 void check_col(int *buf, Column col, int val);
+
 void check_stack(int *buf, Column col, int val);
+
 int get_best(Board board, Ranking *rank);
+
 void check_best(Board board, Ranking *rank, int val);
+
 Column add_val(int val, Column col);
 
-int main(int arg, char **argv)
-{
-  Board board;
-  Ranking *rank = malloc(sizeof(Ranking));
+int main(int arg, char **argv) {
+    Board board;
+    Ranking *rank = malloc(sizeof(Ranking));
 
-  for(int i = 0; i < COLUMNS; i++){
-    board.columns[i].tag = i;
-    board.columns[i].depth = INIT;
-    for(int j = 0; j < POSITIONS; j++){
-      board.columns[i].ray[j] = 0;
+    for (int i = 0; i < COLUMNS; i++) {
+        board.columns[i].tag = i;
+        board.columns[i].depth = INIT;
+        for (int j = 0; j < POSITIONS; j++) {
+            board.columns[i].ray[j] = 0;
+        }
     }
-  }
 
-  print_board(board);
-  Column new = add_val(2, board.columns[0]);
-  board.columns[0] = new;
-  print_board(board);
-  Column new2 = add_val(2, board.columns[0]);
-  board.columns[0] = new2;
-  print_board(board);
+    print_board(board);
+    Column new = add_val(2, board.columns[0]);
+    board.columns[0] = new;
+    print_board(board);
+    Column new2 = add_val(2, board.columns[0]);
+    board.columns[0] = new2;
+    print_board(board);
 
-  free(rank);
-  return 0;
-  }
-
-Column add_val(int val, Column col){
-  int arr[2];
-  int *check;
-  check = arr;
-  if(col.ray[col.depth] == val){
-    check_stack(check, col, val);
-    col.ray[*check] = *(check + 1);
-    for(int i = *check; i < POSITIONS; i++){
-      col.ray[i] = 0;
-    }
-    col.depth = *(check + 1);
-  }
-  col.ray[col.depth + 1] = val;
-  col.depth = col.depth + 1;
-  return col;
+    free(rank);
+    return 0;
 }
 
-int get_best(Board board, Ranking *rank)
-{
-  int best = 0;
-  int tag = 0;
-  for(int i = 0; i < COLUMNS; i++){
-    if(*(*(rank -> columns + i) + 0) > best)
-      best = *(*(rank -> columns + i) + 0);
-      tag = i;
-  }
-  if(tag = 0){
-    best = 8;
-    for(int i = 0; i < COLUMNS; i++){
-      if(board.columns[i].depth < best && *(*(rank -> columns + i) + 0) == 0){
-        best = board.columns[i].depth;
-	tag = i;
-      }
+Column add_val(int val, Column col) {
+    int arr[2];
+    int *check;
+    check = arr;
+    if (col.ray[col.depth] == val) {
+        check_stack(check, col, val);
+        col.ray[*check] = *(check + 1);
+        for (int i = *check; i < POSITIONS; i++) {
+            col.ray[i] = 0;
+        }
+        col.depth = *(check + 1);
     }
-  }
-  return tag;
+    col.ray[col.depth + 1] = val;
+    col.depth = col.depth + 1;
+    return col;
 }
 
-void check_best(Board board, Ranking *rank, int val)
-{
-  for(int i = 0; i < COLUMNS; i++){
-    check_col(*(rank -> columns + i), board.columns[i+1], val);
-  }
+int get_best(Board board, Ranking *rank) {
+    int best = 0;
+    int tag = 0;
+    for (int i = 0; i < COLUMNS; i++) {
+        if (*(*(rank->columns + i) + 0) > best)
+            best = *(*(rank->columns + i) + 0);
+        tag = i;
+    }
+    if (tag = 0) {
+        best = 8;
+        for (int i = 0; i < COLUMNS; i++) {
+            if (board.columns[i].depth < best && *(*(rank->columns + i) + 0) == 0) {
+                best = board.columns[i].depth;
+                tag = i;
+            }
+        }
+    }
+    return tag;
 }
 
-void check_col(int *buf, Column col, int val)
-{
-  if(col.ray[col.depth] == val)
-    check_stack(buf, col, val);
-  if(col.ray[col.depth] > val){
-    buf[0] = 0;
+void check_best(Board board, Ranking *rank, int val) {
+    for (int i = 0; i < COLUMNS; i++) {
+        check_col(*(rank->columns + i), board.columns[i + 1], val);
+    }
+}
+
+void check_col(int *buf, Column col, int val) {
+    if (col.ray[col.depth] == val)
+        check_stack(buf, col, val);
+    if (col.ray[col.depth] > val) {
+        buf[0] = 0;
+        buf[1] = val;
+    }
+    buf[0] = -1;
     buf[1] = val;
-  }
-  buf[0] = -1;
-  buf[1] = val;
 }
 
-void check_stack(int *check, Column col, int val)
-{
-  int i = col.depth;
-  while(col.ray[i] == val && i > 0){
-    val *= 2;
-    i--;
-  }
-  if(col.ray[0] == val)
-    val *= 2;
-  *check = i;
-  *(check + 1) = val;
+void check_stack(int *check, Column col, int val) {
+    int i = col.depth;
+    while (col.ray[i] == val && i > 0) {
+        val *= 2;
+        i--;
+    }
+    if (col.ray[0] == val)
+        val *= 2;
+    *check = i;
+    *(check + 1) = val;
 }
 
-void print_board(Board board)
-{
-  for(int i = 0; i < COLUMNS; i++){
-    print_col(board.columns[i]);
-  }
-  printf("\n\n");
+void print_board(Board board) {
+    for (int i = 0; i < COLUMNS; i++) {
+        print_col(board.columns[i]);
+    }
+    printf("\n\n");
 }
 
-void print_col(Column col)
-{
-  printf("%s%d%s", "Column ", col.tag + 1, ":: [");
-  for(int i = 0; i < POSITIONS - 1; i++){
-    printf("%d%s", col.ray[i], ", ");
-  }
-  printf("%d%s", col.ray[POSITIONS - 1], "]\n");
+void print_col(Column col) {
+    printf("%s%d%s", "Column ", col.tag + 1, ":: [");
+    for (int i = 0; i < POSITIONS - 1; i++) {
+        printf("%d%s", col.ray[i], ", ");
+    }
+    printf("%d%s", col.ray[POSITIONS - 1], "]\n");
 }

@@ -1,0 +1,3 @@
+/mnt/c/code/dev/personal/solitaire-sim/cmake-build-wsl-gcc/CMakeFiles/rebuild_cache.dir
+/mnt/c/code/dev/personal/solitaire-sim/cmake-build-wsl-gcc/CMakeFiles/edit_cache.dir
+/mnt/c/code/dev/personal/solitaire-sim/cmake-build-wsl-gcc/CMakeFiles/solitaire_sim.dir

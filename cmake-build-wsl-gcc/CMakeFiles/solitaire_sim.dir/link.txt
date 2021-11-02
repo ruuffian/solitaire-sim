@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/solitaire_sim.dir/sim.c.o  -o solitaire_sim 
